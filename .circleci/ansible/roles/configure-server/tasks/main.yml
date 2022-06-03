@@ -1,0 +1,62 @@
+---
+
+- name: "Creating prometheus user"
+  user:
+    name: prometheus
+    state: present
+    create_home: false 
+
+- name: "Creating directory structure"
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: prometheus
+    owner: prometheus
+  loop:
+    - /etc/prometheus
+    - /var/lib/prometheus
+
+- name: "install node exporter."
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v2.19.0/prometheus-2.19.0.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: "moving binaries to /usr/local/bin."
+  become: true
+  copy:
+    src: '/tmp/{{ item.source }}'
+    dest: '/usr/local/bin/{{ item.target }}'
+    remote_src: yes
+    mode: '0777'
+  loop:
+    - { source: prometheus-2.19.0.linux-amd64/prometheus, target: prometheus }
+    - { source: prometheus-2.19.0.linux-amd64/promtool, target: promtool } 
+    - { source: prometheus-2.19.0.linux-amd64/consoles, target: consoles }
+    - { source: prometheus-2.19.0.linux-amd64/console_libraries, target: console_libraries }
+    - { source: prometheus-2.19.0.linux-amd64/promtool, target: promtool }
+
+
+- name: "adding promethus config."
+  become: true
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+
+- name: "adding prometheus service"
+  become: true
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: prometheus
+    group: prometheus
+
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes
