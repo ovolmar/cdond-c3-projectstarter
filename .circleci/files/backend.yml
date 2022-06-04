@@ -29,7 +29,7 @@ Resources:
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: voltron-1
-      ImageId: ami-0022f774911c1d690 
+      ImageId: ami-09d56f8956ab235b3 
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}

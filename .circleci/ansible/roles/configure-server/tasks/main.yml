@@ -54,9 +54,29 @@
     group: prometheus
 
 - name: "enable prometheus service"
-  become: true
   systemd:
     state: restarted
     daemon_reload: yes
     name: prometheus
     enabled: yes
+
+
+- name: updating apt cache 
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Installing NPM
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - npm
+    - nodejs
+
+- name: Installing pm2
+  npm: 
+    name: pm2
+    state: present
+    global: true
+    production: true 
+    
