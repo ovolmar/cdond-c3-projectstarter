@@ -1,4 +1,15 @@
 ---
 
-- name: upgrading npm 
-  s
+- name: copy backend files to ec2 instance
+  copy:
+    src: ~/bkend-files.tgz
+    dest: /home/ubuntu/backend.tgz
+
+- name: extracting files
+  unarchive:
+    src: /home/ubuntu/backend.tgz
+    dest: /home/ubuntu/
+
+- name: starting server
+  become: true 
+  shell: "cd /home/ubuntu ; pm2 start npm --name backend -- start"
