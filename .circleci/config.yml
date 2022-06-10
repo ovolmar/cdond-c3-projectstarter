@@ -11,11 +11,16 @@ commands:
       - run:
           name: Destroy environments
           when: on_fail
+          command: echo "workflowid=${CIRCLE_WORKFLOW_ID:0:7}"
+      - run:
+          name: destroy everything
+          when: on_fail
           command: |
-            aws s3 rm s3://UdaPeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws cloudformation delete-stack --stack-name UdaPeople-FE-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name UdaPeople-BE-${CIRCLE_WORKFLOW_ID:0:7}
-
+            aws s3 rm s3://UdaPeople-<< parameters.workflowid >> --recursive
+            aws s3 rb s3://UdaPeople-<< parameters.workflowid >> --force
+            aws cloudformation delete-stack --stack-name UdaPeople-FE-<< parameters.workflowid >>
+            aws cloudformation delete-stack --stack-name UdaPeople-BE-<< parameters.workflowid >>
+      
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -49,7 +54,7 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            cd frontend
+            cd ./frontend
             npm install
             npm audit fix
             npm run build
