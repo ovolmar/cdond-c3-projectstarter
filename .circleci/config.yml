@@ -278,10 +278,12 @@ jobs:
       - image: cimg/node:18.3.0
     steps:
       - checkout
-      - run:
-          name: Install dependencies
+      - attach_workspace:
+          at: . 
+      - run
+          name: Installing deps
           command: |
-            sudo apt-get -y update
+            sudo apt-get -y update npm
             sudo apt-get install -y awscli python3 ansible
       - run:
           name: Get backend url
@@ -340,12 +342,12 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout
-        # - run:
-        #     name: Get old stack workflow id
-        #     command: |
-        #       sudo yum install -y curl
-        #       export OldWorkflowID="the id here"
-        #       export STACKS=[] #put the list of stacks here
+        - run:
+            name: Get old stack workflow id
+            command: |
+              sudo yum install -y curl
+              export OldWorkflowID="the id here"
+              export STACKS=[] #put the list of stacks here
         - run:
             name: Remove old stacks and files
             command: |
