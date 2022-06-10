@@ -103,11 +103,12 @@ jobs:
       - restore_cache:
           key: frontend-build
       - run:
-          name: test frontend
+          name: testing frontend
           command: |
             cd frontend
             npm i
             npm run test
+#--------------------------------------------------------------------------------------------------------------------------
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -119,9 +120,9 @@ jobs:
           name: test backend
           command: |
             cd backend
-            npm i
             npm run test
-            
+#--------------------------------------------------------------------------------------------------------------------------
+
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -130,12 +131,12 @@ jobs:
       - restore_cache:
           key: frontend-build
       - run:
-          name: scan frontend vulnerability
+          name: auditing
           command: |
             cd frontend
             npm i
             npm audit fix --audit-level=critical 
-
+#--------------------------------------------------------------------------------------------------------------------------
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -149,7 +150,7 @@ jobs:
             cd backend
             npm i
             npm audit fix --audit-level=critical 
-
+#--------------------------------------------------------------------------------------------------------------------------
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
