@@ -1,5 +1,6 @@
 version: 2.1
-
+# orbs:
+#   aws-cli: circleci/aws-cli@3.1
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -41,7 +42,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:18.3.0
     steps:
       - checkout
       - restore_cache:
@@ -49,15 +50,16 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            # Your code here
-            exit 1
+            cd frontend
+            npm install
+            npm run build
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
 
   build-backend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:18.3.0
     steps:
       - checkout
       - restore_cache:
@@ -65,85 +67,126 @@ jobs:
       - run:
           name: Back-end build
           command: |
-             # Your code here
-             exit 1
+            cd backend
+            source .env
+            nmp install
+            npm run build
+      
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
 
   test-frontend:
     docker:
-      # Docker image here
+      - image: circleci/node:18.3.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: backend-test
+          command: |
+              cd frontend
+              npm run test
                 
   test-backend:
     docker:
-      # Docker image here
+      - image: circleci/node:18.3.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
-            
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: test backend
+          command: |
+            cd backend
+            npm run test
   scan-frontend:
     docker:
-      # Docker image here
+      - image: circleci/node:18.3.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+      - checkout
+      - restore_cache: 
+          keys: [frontend-build]
+      - run: 
+          name: Scan FrontEnd 
+          command: |
+            cd frontend
+            npm audit --audit-level=critical
+
 
   scan-backend:
     docker:
-      # Docker image here
+      - image: circleci/node:18.3.0
     steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+      - checkout
+      - restore_cache: 
+          keys: [backend-build]
+      - run: 
+          name: Scan BackEnd 
+          command: |
+            cd backend
+            npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your back-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople-backend \
+              --stack-name backend-"${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+            export BACKEND_URL=$(aws cloudformation describe-stacks \
+              --stack-name backend-"${CIRCLE_WORKFLOW_ID}" \
+              --query "Stacks[0].Outputs[?OutputKey=='BackendURL'].OutputValue" \
+              --no-paginate --output text)
+            echo $BACKEND_URL
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
+              --request PUT --data "${BACKEND_URL}" \
+              https://api.memstash.io/values/backendurl
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your front-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople-frontend \
+              --stack-name frontend-"${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            export BACKEND_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+              --request GET https://api.memstash.io/values/backendurl)
+            echo "${BACKEND_URL}" >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
+      - run: 
+          name: installing tools
+          command: | 
+              yum -y install gzip tar
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
+
+      - destroy_environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID}"
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
+      - image: ansible/ansible
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca"
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Install dependencies
           command: |
