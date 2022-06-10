@@ -202,19 +202,18 @@ jobs:
           name: Configure server
           command: |
             cd backend
-            cat <<EOF >> ".env"
-            ENVIRONMENT=production
-            TYPEORM_CONNECTION=postgres 
-            TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts 
-            TYPEORM_MIGRATIONS=./src/migrations/*.ts 
-            TYPEORM_MIGRATIONS_DIR=./src/migrations
-            NODE_ENV=production 
-            TYPEORM_HOST=$TYPEORM_HOST
-            TYPEORM_PORT=$TYPEORM_PORT
-            TYPEORM_PASSWORD=$TYPEORM_PASSWORD
-            TYPEORM_USERNAME=$TYPEORM_USERNAME
-            TYPEORM_DATABASE=$TYPEORM_DATABASE
-            EOF
+            touch ".env"
+            echo ENVIRONMENT=production > ".env"
+            echo TYPEORM_CONNECTION=postgres >> ".env"
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
+            echo NODE_ENV=production >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             cd ..
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook \
@@ -250,19 +249,18 @@ jobs:
           command: |
             npm i
             sudo npm install pm2 -g
-            echo <<EOF >> .env 
-            ENVIRONMENT=production
-            TYPEORM_CONNECTION=postgres
-            TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts
-            TYPEORM_MIGRATIONS=./src/migrations/*.ts
-            TYPEORM_MIGRATIONS_DIR=./src/migrations
-            NODE_ENV=production 
-            TYPEORM_HOST=$TYPEORM_HOST 
-            TYPEORM_PASSWORD=$TYPEORM_PASSWORD
-            TYPEORM_DATABASE=$TYPEORM_DATABASE
-            TYPEORM_PORT=$TYPEORM_PORT 
-            TYPEORM_USERNAME=$TYPEORM_USERNAME
-            EOF           
+            echo ENVIRONMENT=production > ".env"
+            echo TYPEORM_CONNECTION=postgres >> ".env"
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
+            echo NODE_ENV=production >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+            npm run migrations
             
       - run:
           name: Send migration results to memstash
