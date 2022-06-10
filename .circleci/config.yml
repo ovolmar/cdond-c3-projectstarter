@@ -329,33 +329,33 @@ jobs:
 
       - destroy-environment: 
             workflowid: "${CIRCLE_WORKFLOW_ID"
-cleanup:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      # - run:
-      #     name: Get old stack workflow id
-      #     command: |
-      #       sudo yum install -y curl
-      #       export OldWorkflowID="the id here"
-      #       export STACKS=[] #put the list of stacks here
-      - run:
-          name: Remove old stacks and files
-          command: |
-            # if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            # then
-            #   # your code here
-            # fi
-            export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
-             --request GET https://api.memstash.io/values/oldworkflowid)
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            then
-              aws s3 rm s3://UdaPeople-"${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name frontend-"${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name backend-"${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name cloudfront-"${OldWorkflowID}"
-            fi
+  cleanup:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        # - run:
+        #     name: Get old stack workflow id
+        #     command: |
+        #       sudo yum install -y curl
+        #       export OldWorkflowID="the id here"
+        #       export STACKS=[] #put the list of stacks here
+        - run:
+            name: Remove old stacks and files
+            command: |
+              # if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              # then
+              #   # your code here
+              # fi
+              export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+              --request GET https://api.memstash.io/values/oldworkflowid)
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              then
+                aws s3 rm s3://UdaPeople-"${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name frontend-"${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name backend-"${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name cloudfront-"${OldWorkflowID}"
+              fi
 
 workflows:
   default:
