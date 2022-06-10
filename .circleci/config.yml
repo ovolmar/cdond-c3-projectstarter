@@ -243,7 +243,9 @@ jobs:
             aws s3 cp dist s3://UdaPeople-"${CIRCLE_WORKFLOW_ID}" --recursive
 
       - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID}
+          workflowid: "${CIRCLE_WORKFLOW_ID}"
+      - revert-migrations:
+          workflowid: "${CIRCLE_WORKFLOW_ID}"
                     
   deploy-backend:
     docker:
@@ -256,16 +258,20 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - attach_workspace:
-          at: /tmp/workspace
+          at: .
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar aws-cli ansible
+            apk add --update tar aws-cli ansible 
       - run:
           name: Deploy backend
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+            tar -xzvf backend.tgz -C backend/
+            export ANSIBLE_HOST_KEY_CHECKING=FALSE
+            ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/deploy-backend.yml
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID}"
+
 
   smoke-test:
     docker:
@@ -328,7 +334,7 @@ jobs:
             --parameters ParameterKey=WorkflowID,ParameterValue=$CIRCLE_WORKFLOW_ID,UsePreviousValue=false
 
       - destroy-environment: 
-            workflowid: "${CIRCLE_WORKFLOW_ID"
+            workflowid: "${CIRCLE_WORKFLOW_ID}"
   cleanup:
       docker:
         - image: amazon/aws-cli
