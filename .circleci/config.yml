@@ -12,9 +12,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://UdaPeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
-            aws cloudformation delete-stack --stack-name UdaPeople-FE-${CIRCLE_WORKFLOW_ID:0:5}
-            aws cloudformation delete-stack --stack-name UdaPeople-BE-${CIRCLE_WORKFLOW_ID:0:5}
+            aws s3 rm s3://UdaPeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws cloudformation delete-stack --stack-name UdaPeople-FE-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name UdaPeople-BE-${CIRCLE_WORKFLOW_ID:0:7}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -138,14 +138,14 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=UdaPeople-backend \
-              --stack-name backend-"${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+              --stack-name backend-"${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
             export BACKEND_URL=$(aws cloudformation describe-stacks \
-              --stack-name backend-"${CIRCLE_WORKFLOW_ID}" \
+              --stack-name backend-"${CIRCLE_WORKFLOW_ID:0:7}" \
               --query "Stacks[0].Outputs[?OutputKey=='BackendURL'].OutputValue" \
               --no-paginate --output text)
             echo $BACKEND_URL
-            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT --data "${BACKEND_URL}" \
               https://api.memstash.io/values/backendurl
       - run:
@@ -154,12 +154,12 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=UdaPeople-frontend \
-              --stack-name frontend-"${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+              --stack-name frontend-"${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            export BACKEND_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+            export BACKEND_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/backendurl)
             echo "${BACKEND_URL}" >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
@@ -173,7 +173,7 @@ jobs:
             - .circleci/ansible/inventory.txt
 
       - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}}"
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -195,7 +195,7 @@ jobs:
           command: |
             ansible-playbook -i /tmp/workspace/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   run-migrations:
     docker:
@@ -228,7 +228,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-          export API_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+          export API_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/backendurl)
             export API_URL="http://${API_URL}:3030"
             echo "${API_URL}" > .circleci/api_url.txt
@@ -240,12 +240,12 @@ jobs:
             cd frontend
             npm i
             npm run build
-            aws s3 cp dist s3://UdaPeople-"${CIRCLE_WORKFLOW_ID}" --recursive
+            aws s3 cp dist s3://UdaPeople-"${CIRCLE_WORKFLOW_ID:0:7}" --recursive
 
       - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
                     
   deploy-backend:
     docker:
@@ -270,7 +270,7 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=FALSE
             ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/deploy-backend.yml
       - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 
   smoke-test:
@@ -288,7 +288,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+            curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/backendurl \
               > backend-url.txt
       - run:
@@ -300,10 +300,10 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://UdaPeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-east-1.amazonaws.com"
+            URL="http://UdaPeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
             curl -s "${URL}"
       - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID}"
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   cloudfront-update:
     docker:
@@ -325,7 +325,7 @@ jobs:
             echo "${OldWorkflowID}"
             echo "${STACKS[@]}"
 
-            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
             --request PUT --data "${OldWorkflowID}" \
              https://api.memstash.io/values/oldworkflowid
 
@@ -333,10 +333,10 @@ jobs:
             aws cloudformation update-stack \
             --use-previous-template \
             --stack-name cloudfront-${OldWorkflowID} \
-            --parameters ParameterKey=WorkflowID,ParameterValue=$CIRCLE_WORKFLOW_ID,UsePreviousValue=false
+            --parameters ParameterKey=WorkflowID,ParameterValue=$CIRCLE_WORKFLOW_ID:0:7,UsePreviousValue=false
 
       - destroy-environment: 
-            workflowid: "${CIRCLE_WORKFLOW_ID}"
+            workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
   cleanup:
       docker:
         - image: amazon/aws-cli
@@ -355,7 +355,7 @@ jobs:
               # then
               #   # your code here
               # fi
-              export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
+              export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/oldworkflowid)
               if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
               then
