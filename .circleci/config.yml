@@ -11,10 +11,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://UdaPeople --recursive
+            aws s3 rm s3://UdaPeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
             aws cloudformation delete-stack --stack-name UdaPeople-FE-${CIRCLE_WORKFLOW_ID:0:5}
             aws cloudformation delete-stack --stack-name UdaPeople-BE-${CIRCLE_WORKFLOW_ID:0:5}
-            exit 1
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -25,12 +24,11 @@ commands:
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: on_fail
           command: |
             URL="goes here"
             if curl -s --head ${URL}
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curk -H "token:6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca" ))
+            SUCCESS=$( curl -H "token:6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca" --request GET https://api.memstash.io/values/migration-<<parameters.workflow_id>> )
             #SUCCESS = 1
             if(( $SUCCESS==1 )); 
             then
