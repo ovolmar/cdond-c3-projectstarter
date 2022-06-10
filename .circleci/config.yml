@@ -173,7 +173,7 @@ jobs:
           paths:
             - .circleci/ansible/inventory.txt
 
-      - destroy_environment:
+      - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID}"
       # Here's where you will add some code to rollback on failure      
 
@@ -195,7 +195,7 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i /tmp/workspace/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-      - destroy_environment:
+      - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID}"
 
   run-migrations:
@@ -328,7 +328,7 @@ jobs:
             --stack-name cloudfront-${OldWorkflowID} \
             --parameters ParameterKey=WorkflowID,ParameterValue=$CIRCLE_WORKFLOW_ID,UsePreviousValue=false
 
-     - destroy_environment: 
+     - destroy-environment: 
           workflowid: "${CIRCLE_WORKFLOW_ID"
 cleanup:
     docker:
