@@ -202,7 +202,7 @@ jobs:
           name: Configure server
           command: |
             cd backend
-            cat << EOF >> ".env"
+            cat <<EOF >> ".env"
             ENVIRONMENT=production
             TYPEORM_CONNECTION=postgres 
             TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts 
