@@ -307,8 +307,8 @@ jobs:
           command: |
             URL="http://UdaPeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
             curl -s "${URL}"
-      - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   cloudfront-update:
     docker:
