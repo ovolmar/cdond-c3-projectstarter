@@ -188,9 +188,9 @@ jobs:
       - run:
           name: installing dependencies
           command: |
-            yum -y install tar gzip jq git
+            yum -y install tar gzip git
       - run:
-          name: Fire in the hole. Infrastructure going Airbone 
+          name: Ensure back-end infrastructure exists 
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
@@ -198,7 +198,7 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"\
               --tags Name=backend-${CIRCLE_WORKFLOW_ID:0:7} 
       - run:
-          name: bring up frontend
+          name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
@@ -206,7 +206,7 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags Name=frontend-${CIRCLE_WORKFLOW_ID:0:7} 
       - run:
-          name: building ansible inventory
+          name: Add back-end ip to ansible inventory
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
