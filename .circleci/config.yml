@@ -160,11 +160,10 @@ jobs:
       - restore_cache:
           key: frontend-build
       - run:
-          name: auditing
+          name: Auditing FrontEnd
           command: |
             cd frontend
-            npm i
-            npm audit fix --force
+            npm install
             npm audit fix --audit-level=critical 
 #--------------------------------------------------------------------------------------------------------------------------
   scan-backend:
@@ -175,10 +174,10 @@ jobs:
       - restore_cache:
           key: backend-build
       - run:
-          name: scan backend vulnerability
+          name: Auditing Backend
           command: |
             cd backend
-            npm i
+            npm install
             npm audit fix --audit-level=critical 
 #--------------------------------------------------------------------------------------------------------------------------
   deploy-infrastructure:
