@@ -87,13 +87,11 @@ jobs:
             TYPEORM_PASSWORD=${TYPEORM_PASSWORD}
             TYPEORM_DATABASE=${TYPEORM_DATABASE}
             EOF
-      - run:
-          name: Back-end build
-          command: |
             cd backend
             source backend/.env
             sudo npm i
             npm run build
+      
       - save_cache:
           key: backend-build
           paths: 
