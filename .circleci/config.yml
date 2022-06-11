@@ -236,7 +236,6 @@ jobs:
       # Docker image here that supports NodeJS
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
       - checkout
       - attach_workspace:
           at: ~/
@@ -278,8 +277,9 @@ jobs:
               -H "token: f7fb11fa786f43c4968619f0498f33dfa418b47f" \
               --request PUT --data "1" \
               https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations
-      - destroy-environment       
+      #- revert-migrations
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   deploy-frontend:
     docker:
@@ -335,7 +335,8 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure
       - revert-migrations
-      - destroy-environment   
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
                          
   deploy-backend:
     docker:
@@ -375,7 +376,8 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
       - revert-migrations
-      - destroy-environment 
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   smoke-test:
     docker:
@@ -419,7 +421,8 @@ jobs:
             fi
       
       - revert-migrations
-      - destroy-environment
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   cloudfront-update:
     docker:
@@ -461,7 +464,8 @@ jobs:
                     --tags project=udapeople
       # Here's where you will add some code to rollback on failure
       - revert-migrations
-      - destroy-environment  
+      - destroy-environment:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   cleanup:
       docker:
