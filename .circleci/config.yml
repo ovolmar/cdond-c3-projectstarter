@@ -83,10 +83,17 @@ jobs:
             TYPEORM_PASSWORD=${TYPEORM_PASSWORD}
             TYPEORM_DATABASE=${TYPEORM_DATABASE}
             EOF
+      - run:
+          name: Getting Required Files
+          command: |
+            mkdir /tmp/workspace
+            cp ./backend/package.json ~/
+
       - persist_to_workspace:
           root: ~/
           paths:
             - .env
+            - package.json
           
       - run:
           name: building
@@ -140,6 +147,7 @@ jobs:
           command: |
             cd frontend
             npm i
+            npm audit fix --force
             npm audit fix --audit-level=critical 
 #--------------------------------------------------------------------------------------------------------------------------
   scan-backend:
