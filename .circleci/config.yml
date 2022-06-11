@@ -67,10 +67,6 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-      - persist_to_workspace:
-          root: . 
-          paths:
-            - backend/*
       - run:
           name: source the env
           command: |
@@ -87,6 +83,14 @@ jobs:
             TYPEORM_PASSWORD=${TYPEORM_PASSWORD}
             TYPEORM_DATABASE=${TYPEORM_DATABASE}
             EOF
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .env
+      - run:
+          name: building
+          command: |
             cd backend
             source backend/.env
             sudo npm i
