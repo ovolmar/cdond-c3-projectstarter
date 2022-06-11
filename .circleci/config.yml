@@ -161,7 +161,7 @@ jobs:
           command: |
             yum -y install tar gzip jq git
       - run:
-          name: bring up the infrastructure
+          name: Fire in the hole. Infrastructure going Airbone 
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
@@ -188,7 +188,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment   
+      - destroy-environment: 
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   configure-infrastructure:
     docker:
