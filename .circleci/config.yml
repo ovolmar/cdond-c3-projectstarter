@@ -129,12 +129,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: build-frontend
+          key: frontend-build
       - run:
           name: testing frontend
           command: |
             cd frontend
-            npm i
+            sudo npm i
             npm run test
 #--------------------------------------------------------------------------------------------------------------------------
   test-backend:
@@ -148,6 +148,7 @@ jobs:
           name: test backend
           command: |
             cd backend
+            sudo npm i
             npm run test
 #--------------------------------------------------------------------------------------------------------------------------
 
