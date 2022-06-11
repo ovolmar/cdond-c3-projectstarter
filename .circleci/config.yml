@@ -283,10 +283,8 @@ jobs:
 
   deploy-frontend:
     docker:
-      # Docker image here that supports AWS CLI
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
       - checkout
       - attach_workspace:
           at: ~/
@@ -334,7 +332,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure
-      - revert-migrations
+      - revert-migrations:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
                          
@@ -375,7 +374,8 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - revert-migrations
+      - revert-migrations:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
@@ -420,7 +420,8 @@ jobs:
               return 1
             fi
       
-      - revert-migrations
+      - revert-migrations:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
@@ -463,7 +464,8 @@ jobs:
                     --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                     --tags project=udapeople
       # Here's where you will add some code to rollback on failure
-      - revert-migrations
+      - revert-migrations:
+          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
@@ -510,7 +512,8 @@ jobs:
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                 echo "*****DONE!!!*****"
               fi
-        - revert-migrations
+        - revert-migrations:
+            workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 workflows:
   default:
