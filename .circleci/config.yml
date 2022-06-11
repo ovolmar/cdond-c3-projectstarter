@@ -67,6 +67,10 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
+      - persist_to_workspace:
+          root: . 
+          path:
+            - backend/*
       - run:
           name: source the env
           command: |
@@ -227,7 +231,6 @@ jobs:
             ansible-playbook \
               -i .circleci/ansible/inventory.txt \
               .circleci/ansible/configure-server.yml
-      # Here's where you will add some code to rollback on failure  
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
