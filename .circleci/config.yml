@@ -69,7 +69,7 @@ jobs:
           keys: [backend-build]
       - persist_to_workspace:
           root: . 
-          path:
+          paths:
             - backend/*
       - run:
           name: source the env
