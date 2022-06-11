@@ -102,6 +102,7 @@ jobs:
             source ~/.env
             sudo npm i
             npm run build
+            cat /home/circleci/.npm/_logs/2022-06-11T15_10_53_693Z-debug.log
       
       - save_cache:
           key: backend-build
