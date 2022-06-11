@@ -84,10 +84,9 @@ jobs:
             TYPEORM_DATABASE=${TYPEORM_DATABASE}
             EOF
 
-      - persist_to_workspace:
-          root: backend/*
-          paths:
-            - .env
+      - attach_workspace:
+          at: . 
+          
       - run:
           name: building
           command: |
