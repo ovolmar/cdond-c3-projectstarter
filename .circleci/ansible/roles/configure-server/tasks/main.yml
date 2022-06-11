@@ -62,16 +62,22 @@
 
 
 - name: updating apt cache 
-  ansible.builtin.apt:
+  apt:
     update_cache: true
 
+- name: updating packages
+  apt:
+    name: * 
+    state: latest
+
 - name: Installing NPM
-  ansible.builtin.apt:
+  apt:
     name: "{{ item }}"
     state: latest
   with_items:
     - npm
     - nodejs
+    - python
 
 - name: Installing pm2
   npm: 
