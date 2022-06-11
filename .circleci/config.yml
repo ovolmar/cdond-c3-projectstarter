@@ -85,7 +85,7 @@ jobs:
             EOF
 
       - persist_to_workspace:
-          root: ~/
+          root: backend/*
           paths:
             - .env
       - run:
