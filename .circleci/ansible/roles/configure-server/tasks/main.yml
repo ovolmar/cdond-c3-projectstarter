@@ -65,10 +65,10 @@
   apt:
     update_cache: true
 
-- name: updating packages
-  apt:
-    name: * 
-    state: latest
+# - name: updating packages
+#   apt:
+#     name: * 
+#     state: latest
 
 - name: Installing NPM
   apt:
