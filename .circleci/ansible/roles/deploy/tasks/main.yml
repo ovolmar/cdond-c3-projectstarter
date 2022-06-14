@@ -10,6 +10,13 @@
     src: /home/ubuntu/backend.tgz
     dest: /home/ubuntu/
 
+- name: "install npm on {{ ansible_hostname }}"
+  shell: npm install 
+
+- name: 'stop pm2'
+  shell: pm2 stop default
+
+
 - name: starting server
   become: true 
   shell: "cd /home/ubuntu ; pm2 start npm --name backend -- start"

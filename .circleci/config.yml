@@ -283,7 +283,8 @@ jobs:
           no_output_timeout: 20m
           working_directory: ./backend
           command: |
-            npm i
+            cd backend 
+            npm install 
             sudo npm install pm2 -g
             echo ENVIRONMENT=production > ".env"
             echo TYPEORM_CONNECTION=postgres >> ".env"
@@ -296,15 +297,19 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
-            npm run migrations
-            
+            npm run migrations > migrations_dump.txt
       - run:
           name: Send migration results to memstash
           command: |
-            curl -H "Content-Type: text/plain" \
-              -H "token: f7fb11fa786f43c4968619f0498f33dfa418b47f" \
-              --request PUT --data "1" \
-              https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+              echo "Database migration has been executed successfully"
+              curl -H "Content-Type: text/plain" -H "token: 3b:b5:2c:64:a7:26:21:18:60:d0:77:35:2a:53:1d:5a" --request PUT --data "success" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz//values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}
+            else
+              printf "\nALERT\nALERT!!!\nFAILURE\tverify DB setup!\n"
+              curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1
+            fi
+
       #- revert-migrations
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -335,7 +340,7 @@ jobs:
           command: |
             # your code here
             touch ".env"
-            BACKEND_ip=$(aws ec2 describe-instances --region eu-central-1  \
+            BACKEND_ip=$(aws ec2 describe-instances --region us-east-1  \
                 --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --query "Reservations[].Instances[*].PublicIpAddress" \
                 --output text)            
@@ -420,7 +425,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --region eu-central-1  \
+            export BACKEND_IP=$(aws ec2 describe-instances --region us-east-1  \
                 --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --query "Reservations[].Instances[*].PublicIpAddress" \
                 --output text)
@@ -438,10 +443,10 @@ jobs:
           command: |
             echo ${CIRCLE_WORKFLOW_ID:0:7}
             echo ${CIRCLE_WORKFLOW_ID:0:7}
-            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.eu-central-1.amazonaws.com/#/employees"            
-            curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.eu-central-1.amazonaws.com/#/employees | grep "Welcome"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-1.amazonaws.com/#/employees"            
+            curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-1.amazonaws.com/#/employees | grep "Welcome"
             echo ${URL} 
-            if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.eu-central-1.amazonaws.com/#/employees | grep "Welcome"
+            if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-1.amazonaws.com/#/employees | grep "Welcome"
             then
               return 0
             else
@@ -488,7 +493,7 @@ jobs:
             aws cloudformation deploy \
                     --template-file .circleci/files/cloudfront.yml \
                     --stack-name InitialStack \
-                    --region eu-central-1 \
+                    --region us-east-1 \
                     --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
                     --tags project=udapeople
       # Here's where you will add some code to rollback on failure
