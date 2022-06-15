@@ -74,10 +74,7 @@
   apt:
     name: "{{ item }}"
     state: latest
-  with_items:
-    - npm
-    - nodejs
-    - python
+  loop: ['npm', 'nodejs']
 
 - name: Installing pm2
   npm: 
