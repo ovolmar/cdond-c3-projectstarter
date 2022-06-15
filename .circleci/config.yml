@@ -284,7 +284,7 @@ jobs:
           no_output_timeout: 20m
           working_directory: ~/backend
           command: |
-            cd backend 
+            cd ~/backend 
             npm install 
             sudo npm install pm2 -g
             echo ENVIRONMENT=production > ".env"
