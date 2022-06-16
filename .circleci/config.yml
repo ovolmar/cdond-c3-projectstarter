@@ -266,7 +266,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/
+          at: . 
       - restore_cache:
           key: backend-build
       - run:
@@ -281,7 +281,7 @@ jobs:
       - run:
           name: Run migrations
           no_output_timeout: 20m
-          working_directory: ~/backend
+          #working_directory: ./backend
           command: |
             cd backend 
             npm install 
