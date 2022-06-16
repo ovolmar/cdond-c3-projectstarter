@@ -262,14 +262,13 @@ jobs:
 
   run-migrations:
     docker:
-      # Docker image here that supports NodeJS
       - image: circleci/node:13.8.0
     steps:
       - checkout
       - attach_workspace:
           at: ~/
       - restore_cache:
-          key: backend-build
+          key: backend
       - run:
           name: Install AWS CLI dependencies
           working_directory: /tmp
