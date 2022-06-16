@@ -265,10 +265,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      # - attach_workspace:
-      #     at: ~/
+      - attach_workspace:
+          at: ~/
       - restore_cache:
-          key: backend
+          key: backend-build
       - run:
           name: Install AWS CLI dependencies
           working_directory: /tmp
