@@ -102,6 +102,7 @@ jobs:
             cd backend
             sudo npm i
             npm run build
+            npm audit fix --audit-level=critical --force
 
       - save_cache:
           key: build-backend
@@ -283,7 +284,6 @@ jobs:
           name: Run migrations
           no_output_timeout: 20m
           command: |
-            npm i
             echo ENVIRONMENT=production > "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
@@ -297,6 +297,7 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             npm upgrade
+            npm install -g n
             npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
