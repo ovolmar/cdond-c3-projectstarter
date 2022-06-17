@@ -179,7 +179,7 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical 
+            npm audit fix --audit-level=critical --force
 #--------------------------------------------------------------------------------------------------------------------------
   deploy-infrastructure:
     docker:
@@ -274,7 +274,7 @@ jobs:
           name: Install AWS CLI dependencies
           # working_directory: /tmp
           command: |
-            npm --update install python3 npm
+            sudo npm --update install python3 npm
             sudo apt-get update 
             sudo apt-get install unzip  -y
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -296,10 +296,10 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
-            npm upgrade
-            npm install -g n
-            npm audit fix --audit-level=critical --force
-            npm run migrations > migrations_dump.txt 
+            sudo npm upgrade
+            sudo npm install -g n
+            sudo npm audit fix --audit-level=critical --force
+            sudo npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
           name: Send migration status to a 3rd party key-value store
