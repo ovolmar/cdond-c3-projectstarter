@@ -164,7 +164,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical 
 #--------------------------------------------------------------------------------------------------------------------------
   scan-backend:
     docker:
@@ -234,7 +234,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible openssh-client tar gzip curl nodejs npm
+            apk add --update ansible openssh-client tar gzip curl ansible
             pip install awscli
       - run:
           name: Configure server
@@ -262,7 +262,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node
     steps:
       - checkout
       - attach_workspace:
