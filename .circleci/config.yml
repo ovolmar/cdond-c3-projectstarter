@@ -298,7 +298,6 @@ jobs:
             cd backend
             npm upgrade
             npm audit fix --audit-level=critical --force
-            npm run migrations:revert
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
