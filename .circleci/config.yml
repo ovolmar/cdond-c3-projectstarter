@@ -102,7 +102,6 @@ jobs:
             cd backend
             sudo npm i
             npm run build
-            npm audit fix --audit-level=critical 
 
       - save_cache:
           key: build-backend
