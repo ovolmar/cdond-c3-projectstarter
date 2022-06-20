@@ -100,7 +100,7 @@ jobs:
           name: building
           command: |
             cd backend
-            sudo npm i
+            npm install
             npm run build
             npm audit fix --audit-level=critical --force
       - save_cache:
