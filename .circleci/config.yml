@@ -268,7 +268,8 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      # - image: circleci/node:13.8.0
+      - image: circleci/base:current
     steps:
       - checkout
       - attach_workspace:
@@ -302,6 +303,7 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             sudo npm install -g n
+            npm i
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
