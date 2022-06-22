@@ -300,18 +300,18 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             sudo npm install -g n
-            sudo npm run migrations > ./backend/migrations_dump.txt 
-            cat ./backend/migrations_dump.txt
+            sudo npm run migrations > backend/migrations_dump.txt 
+            cat backend/migrations_dump.txt
       - run:
           name: Send migration status to a 3rd party key-value store
           command: |
-            if grep -q "has been executed successfully." ./backend/migrations_dump.txt
+            if grep -q "has been executed successfully." backend/migrations_dump.txt
             then
               echo "Database migration has been executed successfully"
               curl -H "Content-Type: text/plain" -H "token: 3b:b5:2c:64:a7:26:21:18:60:d0:77:35:2a:53:1d:5a" --request PUT --data "success" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}
             else
               printf "\nALERT\nALERT!!!\nFAILURE\tverify DB setup!\n"
-              curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}  -d '1
+              curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
 
       #- revert-migrations
