@@ -266,29 +266,20 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
-      #- image: cimg/base:2021.04
-    steps:
-      - checkout
-      - run:
-          name: npm install
-          working_directory: ./backend
-          command: |
-            npm install typescript
-            npm --update install pytohon3 npm
-            
+      #- image: circleci/node:13.8.0
+      - image: cimg/base:2021.04
       # - attach_workspace:
       #     at: ~/
-      # - run:
-      #     name: Install AWS CLI dependencies
-      #     # working_directory: /tmp
-      #     command: |
-      #       sudo apt-get update
-      #       sudo apt install npm python3 -y  
-      #       sudo apt-get install unzip  -y
-      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      #       unzip awscliv2.zip
-      #       sudo ./aws/install
+      - run:
+          name: Install AWS CLI dependencies
+          # working_directory: /tmp
+          command: |
+            sudo apt-get update
+            sudo apt install npm python3 -y  
+            sudo apt-get install unzip  -y
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Run migrations
           no_output_timeout: 20m
