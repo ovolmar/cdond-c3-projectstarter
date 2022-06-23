@@ -132,7 +132,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: [frontend-build]
+          key: frontend-build
       - run:
           name: testing frontend
           command: |
@@ -146,7 +146,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [build-backend]
+          keys: build-backend
       - run:
           name: test backend
           command: |
@@ -160,7 +160,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: [frontend-build]
+          key: frontend-build
       - run:
           name: Auditing FrontEnd
           command: |
@@ -272,7 +272,7 @@ jobs:
       - attach_workspace:
           at: . 
       - restore_cache:
-          keys: [backend-build]
+          keys: backend-build
       - attach_workspace:
           at: ~/
       - run:
