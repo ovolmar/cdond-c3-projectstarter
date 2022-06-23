@@ -266,26 +266,29 @@ jobs:
 
   run-migrations:
     docker:
-      # - image: circleci/node:13.8.0
-      - image: cimg/base:2021.04
+      - image: circleci/node:13.8.0
+      #- image: cimg/base:2021.04
     steps:
       - checkout
-      - attach_workspace:
-          at: . 
-      - restore_cache:
-          keys: [backend-build]
-      - attach_workspace:
-          at: ~/
       - run:
-          name: Install AWS CLI dependencies
-          # working_directory: /tmp
+          name: npm install
+          working_directory: ./backend
           command: |
-            sudo apt-get update
-            sudo apt install npm python3 -y  
-            sudo apt-get install unzip  -y
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+            npm install typescript
+            npm --update install pytohon3 npm
+            
+      # - attach_workspace:
+      #     at: ~/
+      # - run:
+      #     name: Install AWS CLI dependencies
+      #     # working_directory: /tmp
+      #     command: |
+      #       sudo apt-get update
+      #       sudo apt install npm python3 -y  
+      #       sudo apt-get install unzip  -y
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
       - run:
           name: Run migrations
           no_output_timeout: 20m
@@ -302,8 +305,9 @@ jobs:
             # echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             # echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
-            npm install
-            npm run build
+            # npm install
+            # npm run build
+            npm run migrations:revert
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
