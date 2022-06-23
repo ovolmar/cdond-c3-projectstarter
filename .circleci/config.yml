@@ -35,7 +35,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=`curl -H "token: f7fb11fa786f43c4968619f0498f33dfa418b47f" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}`
+            SUCCESS=`curl -H "token: f7fb11fa786f43c4968619f0498f33dfa418b47f" --request GET https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}` 
             echo $SUCCESS
             if [[ $SUCCESS == 1 ]];
             then
@@ -102,7 +102,7 @@ jobs:
       #       - .env
       #       - package.json
       - run:
-          name: building
+          name: Backend-Build
           command: |
             cd backend
             npm install
@@ -110,8 +110,7 @@ jobs:
             npm audit fix --audit-level=critical --force
       - save_cache:
           key: build-backend
-          paths: 
-            - ./backend/node_modules
+          paths: [backend/node_modules ]
       
       - run:
           name: Compiled code will be retrieved by deploy-backend.yml 
@@ -133,7 +132,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: frontend-build
+          key: [frontend-build]
       - run:
           name: testing frontend
           command: |
@@ -161,7 +160,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: frontend-build
+          key: [frontend-build]
       - run:
           name: Auditing FrontEnd
           command: |
@@ -175,7 +174,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: backend-build
+          key: [backend-build]
       - run:
           name: Auditing Backend
           command: |
@@ -370,7 +369,8 @@ jobs:
             cd frontend
             npm install
             npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            npm audit fix --audit-level=critical --force
+            #tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure
       - revert-migrations:
