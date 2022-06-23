@@ -300,7 +300,7 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
-            npm install -g n
+            sudo npm install -g n
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
