@@ -324,8 +324,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      #- image: circleci/node:13.8.0
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -336,14 +335,11 @@ jobs:
           name: Install AWS CLI dependencies
           working_directory: /tmp
           command: |
-            yum install -y tar curl sudo 
-            curl -sL https://rpm.nodesource.com/setup_13.x | sudo bash -
-            yum install -y nodejs
-            # sudo apt-get update && sudo apt-get install -yy less
-            # sudo apt-get install unzip -y
-            # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            # unzip awscliv2.zip
-            # sudo ./aws/install
+            sudo apt-get update && sudo apt-get install -yy less
+            sudo apt-get install unzip -y
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Install dependencies
           command: |
