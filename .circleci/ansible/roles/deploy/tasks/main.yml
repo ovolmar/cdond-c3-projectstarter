@@ -1,21 +1,26 @@
 ---
 
-- name: copy backend files to ec2 instance
-  copy:
-    src: /root/project/backend.tgz
-    dest: /home/ubuntu/backend.tgz
+- name: "Upgrading  npm on {{ ansible_hostnme }}"
+  become: true
+  shell: "npm install -g npm@latest"
 
-- name: extracting files
+- name: copy backend files to ec2 instance
   unarchive:
-    src: /home/ubuntu/backend.tgz
+    src: /root/project/backend.tgz
     dest: /home/ubuntu/
 
-- name: "install npm on {{ ansible_hostname }}"
-  shell: npm install 
+- name: Build backend
+  ignore_errors: yes
+  shell: |
+    cd /home/ubuntu/backend
+    npm i
+    npm run build
 
-- name: 'stop pm2'
-  shell: pm2 stop default
-
+- name: Stop and delete already running server
+  ignore_errors: yes
+  shell: |
+    pm2 stop backend
+    pm2 delete backend
 
 - name: starting server
   become: true 
