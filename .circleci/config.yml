@@ -328,7 +328,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/udaproject
+          at: ~/
       - run:
           name: Install AWS CLI dependencies
           working_directory: /tmp
@@ -364,7 +364,7 @@ jobs:
           command: |
             echo ENVIRONMENT=production >> frontend/.env
             echo NODE_ENV=production >> frontend/.env
-            cd ~/udaproject/frontend
+            cd ~/frontend
             npm install
             npm run build
             npm audit fix --audit-level=critical --force
@@ -383,7 +383,8 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ['6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca']
+          fingerprints: 
+            - '6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca'
       - attach_workspace:
           at: ~/
       - attach_workspace:
