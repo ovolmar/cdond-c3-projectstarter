@@ -2,7 +2,7 @@
 
 - name: copy backend files to ec2 instance
   copy:
-    src: backend.tgz
+    src: /root/project/backend.tgz
     dest: /home/ubuntu/backend.tgz
 
 - name: extracting files
