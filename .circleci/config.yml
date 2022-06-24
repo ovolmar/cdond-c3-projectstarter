@@ -174,7 +174,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: backend-build
+          key: frontend-build
       - run:
           name: Auditing Backend
           command: |
@@ -187,6 +187,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - restore_cache:
+          key: frontend-build
       - run:
           name: installing dependencies
           command: |
@@ -229,9 +231,11 @@ jobs:
   
     steps:
       - checkout
+      - restore_cache:
+          key: frontend-build
       - add_ssh_keys:
           fingerprints: 
-            - "3b:b5:2c:64:a7:26:21:18:60:d0:77:35:2a:53:1d:5a"
+            - "6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca"
       - attach_workspace:
           at: ~/
       - run:
@@ -273,8 +277,8 @@ jobs:
           at: . 
       - restore_cache:
           keys: backend-build
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       - run:
           name: Install AWS CLI dependencies
           # working_directory: /tmp
@@ -328,7 +332,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          key: frontend-build
       - attach_workspace:
           at: ~/
       - run:
@@ -381,10 +385,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: frontend-build
       - add_ssh_keys:
           fingerprints: 
-            - '3b:b5:2c:64:a7:26:21:18:60:d0:77:35:2a:53:1d:5a'
+            - '6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca'
       - attach_workspace:
           at: ~/
       # - attach_workspace:
