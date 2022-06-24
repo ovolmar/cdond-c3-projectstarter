@@ -390,7 +390,7 @@ jobs:
           fingerprints: 
             - '6e:27:01:7e:76:8a:ca:b8:4b:38:99:83:81:2e:46:ca'
       - attach_workspace:
-          at: ~/
+          at: .
       # - attach_workspace:
       #     at: /tmp/workspace
       - restore_cache:
