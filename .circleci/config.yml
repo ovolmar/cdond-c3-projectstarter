@@ -228,7 +228,6 @@ jobs:
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
-  
     steps:
       - checkout
       - restore_cache:
@@ -427,19 +426,16 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Install dependencies
+          name: Installing dependencies
           command: |
             pip install awscli
             apk add --update curl nodejs npm
-      - run:
+     - run:
           name: Backend smoke test.
           command: |
-            # export BACKEND_IP=$(aws ec2 describe-instances --region us-east-1  \
-            #     --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            #     --query "Reservations[].Instances[*].PublicIpAddress" \
-            #     --output text)
-            BACKEND_ip=$(curl -H "Content-Type: text/plain" -H "token: 3b:b5:2c:64:a7:26:21:18:60:d0:77:35:2a:53:1d:5a" --request GET https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7})
-            export API_URL="http://${BACKEND_IP}:3030"
+            export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+            
+            API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             curl "${API_URL}/api/status"
             if curl "${API_URL}/api/status" | grep -i "ok"
