@@ -430,7 +430,7 @@ jobs:
           command: |
             pip install awscli
             apk add --update curl nodejs npm
-     - run:
+      - run:
           name: Backend smoke test.
           command: |
             export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
