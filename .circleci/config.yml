@@ -364,6 +364,7 @@ jobs:
             export API_URL="http://${BACKEND_ip}:3030"
             echo API_URL="${API_URL}" >> frontend/.env
             cat frontend/.env
+            echo BACKEND_ip >> .circleci/ansible/inventory.txt
       - run:
           name: Deploy frontend objects
           command: |
