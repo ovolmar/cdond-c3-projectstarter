@@ -496,38 +496,29 @@ jobs:
             command: |
               apk add --update curl npm ; pip3 install --upgrade pip ; pip3 install awscli
         - run:
-            name: Fetch OldStack Workflow ID
+            name: Fetch OldStack and Nuke'em 
             command: |
-              # Fetch the Old workflow ID
-              # Fetch the Old workflow ID
               export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET  https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/migration-${CIRCLE_WORKFLOW_ID:0:7})
               echo OldWorkflowID: "${OldWorkflowID}"
-              echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-        - run:
-            name: Remove old stacks and files
-            command: |
-              # You can use any condition like:
-              # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-              # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
-              #if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
-              #then
-              export OldWorkflowID=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
-              --request GET  https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/values/migration-${CIRCLE_WORKFLOW_ID:0:7})
+              echo "CIRCLE_WORKFLOW_ID:" "${CIRCLE_WORKFLOW_ID:0:7}"
+              X=${CIRCLE_WORKFLOW_ID:0:7}
+              Z=${OldWorkflowID}
+
               echo "s3://udapeople-${OldWorkflowID}"
               aws s3 ls
-              if aws s3 ls s3://udapeople-${OldWorkflowID} 2>&1 | grep -q 'NoSuchBucket'
-              then
-                aws s3 ls
-                echo "WARNING: BUCKET NOT FOUND!!!!!"
-                echo "***** Cannot Cleanup ***** "
+            if [ -z $OldWorkflowID ]; then echo "Nothing to do here" 
               else
-                echo "***** Begin Cleanup *****"
-                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive --quiet
+                if [[ $X != $Z ]]
+              then
+                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive 
                 aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                 echo "*****DONE!!!*****"
+              else
+                echo "$Z is the same as $X Abort Abort"
               fi
+            fi
         - revert-migrations:
             workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
