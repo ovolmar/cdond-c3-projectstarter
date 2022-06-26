@@ -1,4 +1,9 @@
 ---
+# =======
+# - name: "install reqs on {{ ansible_hostname }}"
+#   package:
+#     name: ['openssh-server', 'rsync']
+#     state: present 
 
 - name: "Upgrading  npm "
   become: true
@@ -7,6 +12,8 @@
 # - name: copy backend files to ec2 instance
 #   unarchive:
 #     src: /root/project/
+#   synchronize:
+#     src: /root/project/backend/dist
 #     dest: ./udapeople
 #   ignore_errors: true
 
