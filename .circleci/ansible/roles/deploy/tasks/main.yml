@@ -8,7 +8,6 @@
   synchronize:
     src: /root/project/backend/dist
     dest: ./udapeople
-  recursive: true
 
 - name: Build backend
   ignore_errors: yes
