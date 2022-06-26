@@ -9,13 +9,10 @@
   become: true
   shell: "npm install -g npm@latest"
 
-# - name: copy backend files to ec2 instance
-#   unarchive:
-#     src: /root/project/
-#   synchronize:
-#     src: /root/project/backend/dist
-#     dest: ./udapeople
-#   ignore_errors: true
+- name: copy backend files to ec2 instance
+  unarchive:
+    src: /root/project/backend.tgz
+    dest: /home/ubuntu/
 
 - name: Build backend
   ignore_errors: yes
