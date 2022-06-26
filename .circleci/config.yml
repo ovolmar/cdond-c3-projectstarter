@@ -504,7 +504,6 @@ jobs:
               echo "CIRCLE_WORKFLOW_ID:" "${CIRCLE_WORKFLOW_ID:0:7}"
               X=${CIRCLE_WORKFLOW_ID:0:7}
               Z=${OldWorkflowID}
-
                 echo "s3://udapeople-${OldWorkflowID}"
                 aws s3 ls
 
@@ -519,7 +518,6 @@ jobs:
                 fi
         - revert-migrations:
             workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
-
 workflows:
   default:
     jobs:
