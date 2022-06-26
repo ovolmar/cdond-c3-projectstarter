@@ -4,7 +4,7 @@
     src: backend.tgz
     dest: /home/ubuntu/
 
-- name: flatting the wings 
+- name: flat the wings and go home
   ignore_errors: yes
   shell: |
     cd /home/ubuntu/backend
