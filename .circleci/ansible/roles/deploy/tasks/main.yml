@@ -1,19 +1,14 @@
 ---
-- name: "install reqs on {{ ansible_hostname }}"
-  package:
-    name: ['openssh', 'rsync']
-    state: present 
 
-
-- name: "Upgrading  npm on {{ ansible_hostname}}"
+- name: "Upgrading  npm "
   become: true
   shell: "npm install -g npm@latest"
 
-- name: copy backend files to ec2 instance
-  synchronize:
-    src: /root/project/backend/dist
-    dest: ./udapeople
-  ignore_errors: true
+# - name: copy backend files to ec2 instance
+#   unarchive:
+#     src: /root/project/
+#     dest: ./udapeople
+#   ignore_errors: true
 
 - name: Build backend
   ignore_errors: yes
@@ -33,19 +28,3 @@
   shell: "cd /home/ubuntu ; pm2 start npm --name backend -- start"
 
 
-- name: "kicking off the server"
-  become: true
-  command: pm2 start -f ./main.js
-  args:
-    chdir: ./udapeople/dist
-  environment:
-    ENVIRONMENT: production
-    TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
-    TYPEORM_MIGRATIONS_DIR: "./migrations"
-    TYPEORM_MIGRATIONS: "./migrations/*.js"
-    TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
-    TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
-    TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
-    TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
-    TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
-    TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
