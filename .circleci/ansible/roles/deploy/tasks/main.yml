@@ -11,7 +11,7 @@
 
 - name: copy backend files to ec2 instance
   unarchive:
-    src: /root/project/backend.tgz
+    src: backend.tgz
     dest: /home/ubuntu/
 
 - name: Build backend
