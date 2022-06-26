@@ -1,7 +1,7 @@
 ---
 - name: "install reqs on {{ ansible_hostname }}"
   package:
-    name: ['openssh', 'rsync']
+    name: ['openssh-server', 'rsync']
     state: present 
 
 
@@ -9,11 +9,11 @@
   become: true
   shell: "npm install -g npm@latest"
 
-- name: copy backend files to ec2 instance
-  synchronize:
-    src: /root/project/backend/dist
-    dest: ./udapeople
-  ignore_errors: true
+# - name: copy backend files to ec2 instance
+#   synchronize:
+#     src: /root/project/backend/dist
+#     dest: ./udapeople
+#   ignore_errors: true
 
 - name: Build backend
   ignore_errors: yes
