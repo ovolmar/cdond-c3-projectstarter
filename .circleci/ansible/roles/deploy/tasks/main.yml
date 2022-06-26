@@ -1,17 +1,19 @@
 ---
 - name: copy backend files to ec2 instance
   unarchive:
-    src: backend.tgz
+    src: /root/project/artifact.tar.gz
     dest: /home/ubuntu/
 
 - name: flat the wings and go home
-  ignore_errors: yes
   shell: |
     cd /home/ubuntu/backend
     npm install -g npm@latest
     npm install
     npm run build
     pm2 start npm --name backend -- start
+  ignore_errors: yes
+  changed_when: False
+  
 
 - name: Moving on
   debug:
