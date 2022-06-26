@@ -505,20 +505,21 @@ jobs:
               X=${CIRCLE_WORKFLOW_ID:0:7}
               Z=${OldWorkflowID}
 
-              echo "s3://udapeople-${OldWorkflowID}"
-              aws s3 ls
-            if [ -z $OldWorkflowID ]; then echo "Nothing to do here" 
+                echo "s3://udapeople-${OldWorkflowID}"
+                aws s3 ls
+              if [ -z $OldWorkflowID ]
+                then echo "Nothing to do here" 
               else
-                if [[ $X != $Z ]]
+                  if [[ $X != $Z ]]
               then
-                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive 
-                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-                echo "*****DONE!!!*****"
+                  aws s3 rm s3://udapeople-${OldWorkflowID} --recursive 
+                  aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                  echo "*****DONE!!!*****"
               else
-                echo "$Z is the same as $X Abort Abort"
+                  echo "$Z is the same as $X Abort Abort"
+                fi
               fi
-            fi
         - revert-migrations:
             workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
 
