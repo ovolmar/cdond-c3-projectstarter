@@ -1,6 +1,11 @@
 ---
+- name: "install reqs on {{ ansible_hostname }}"
+  package:
+    name: ['openssh', 'rsync']
+    state: present 
 
-- name: "Upgrading  npm on {{ ansible_hostnme }}"
+
+- name: "Upgrading  npm on {{ ansible_hostname}}"
   become: true
   shell: "npm install -g npm@latest"
 
@@ -8,6 +13,7 @@
   synchronize:
     src: /root/project/backend/dist
     dest: ./udapeople
+  ignore_errors: true
 
 - name: Build backend
   ignore_errors: yes
