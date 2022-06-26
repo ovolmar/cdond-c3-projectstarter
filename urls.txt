@@ -1,14 +1,5 @@
-URL0 - https://github.com/ovolmar/cdond-c3-projectstarter.git
-URL1 - 
-URL2 - 
-URL3 - 
-URL4 - 
-URL5 - 
-URL6 - 
-URL7 - 
-URL8 - 
-URL9 - 
-
-
-udapeople-my-udapeople-kk1j287dhjppmz437.s3.amazonaws.com
+https://github.com/ovolmar/cdond-c3-projectstarter.git
+http://udapeople-88676c2.s3-website-us-east-1.amazonaws.com/#/employees
+http://ec2-54-162-51-41.compute-1.amazonaws.com:9090/targets
+https://s3.console.aws.amazon.com/s3/buckets/udapeople-db614d5?region=us-east-1
 
