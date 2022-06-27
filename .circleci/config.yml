@@ -29,6 +29,7 @@ commands:
     parameters:
       workflowid:
         type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - restore_cache:
           key: backend-build
@@ -283,8 +284,7 @@ jobs:
               printf "\nALERT\nALERT!!!\nFAILURE\tverify DB setup!\n"
               curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
-      - destroy-environment:
-          workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment
       - revert-migrations
 
   deploy-frontend:
@@ -424,7 +424,7 @@ jobs:
             echo ${URL} 
             if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-1.amazonaws.com/#/employees | grep "Welcome"
             then
-              return 1
+              return 1  # this should be zero
             else
               return 1
             fi
