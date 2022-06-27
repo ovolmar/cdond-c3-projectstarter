@@ -7,12 +7,13 @@ commands:
     parameters:
       workflowid:
         type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
           name: delete S3 content
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 rm s3://udapeople-<<parameters.workflowid>> --recursive
 
       - run:
           name: Destroy environments
@@ -264,21 +265,11 @@ jobs:
           name: Run migrations
           no_output_timeout: 20m
           command: |
-            # echo ENVIRONMENT=production > "backend/.env"
-            # echo TYPEORM_CONNECTION=postgres >> "backend/.env"
-            # echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
-            # echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
-            # echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
-            # echo NODE_ENV=production >> "backend/.env"
-            # echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            # echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            # echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            # echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            # echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+
             cd backend
             npm install
             npm run build
-            npm run migrations:revert
+            #npm run migrations:revert
             npm run migrations > migrations_dump.txt 
             cat migrations_dump.txt
       - run:
@@ -292,10 +283,9 @@ jobs:
               printf "\nALERT\nALERT!!!\nFAILURE\tverify DB setup!\n"
               curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://kvdb.io/57Zk1VoEHUCX6ssDFosduz/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
-
-      #- revert-migrations
       - destroy-environment:
           workflowid: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations
 
   deploy-frontend:
     docker:
@@ -434,7 +424,7 @@ jobs:
             echo ${URL} 
             if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-1.amazonaws.com/#/employees | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi
@@ -545,7 +535,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
